@@ -7,7 +7,8 @@ var FamousEngine = require('famous/core/FamousEngine');
 // Boilerplate code to make your life easier
 FamousEngine.init();
 
-var root = FamousEngine.createScene().addChild();
+var base = FamousEngine.createScene().addChild();
+var root = base.addChild();
 root.setSizeMode(1, 1, 1);
 root.setAbsoluteSize(400, 400);
 
@@ -32,8 +33,12 @@ setTimeout(function(){
     domEl = new DOMElement(root);
     domEl.setProperty('border', '1px solid black');
     domEl.setProperty('overflow', 'scroll');
-}, 500);
+}, 250);
 
 setTimeout(function(){
     root.removeChild(children[0]);
-}, 1000);
+}, 500);
+
+setTimeout(function(){
+    base.removeChild(root);
+}, 750);
