@@ -8,31 +8,47 @@ var FamousEngine = require('famous/core/FamousEngine');
 FamousEngine.init();
 
 // Initialize with a scene; then, add a 'node' to the scene root
-var logo = FamousEngine.createScene().addChild();
+var root = FamousEngine.createScene().addChild();
+var circle;
+var square;
+var el;
 
-// Create an [image] DOM element providing the logo 'node' with the 'src' path
-new DOMElement(logo, { tagName: 'img' })
-    .setAttribute('src', './images/famous_logo.png');
+function addCircle() {
+    circle = root.addChild();
+    circle.setSizeMode(1,1,1);
+    circle.setAbsoluteSize(300, 300);
+    el = new DOMElement(circle);
+    el.setProperty('border', '5px solid red');
+    el.setProperty('border-radius', '50%');
+    el.setContent('circle');
+}
 
-// Chainable API
-logo
-    // Set size mode to 'absolute' to use absolute pixel values: (width 250px, height 250px)
-    .setSizeMode('absolute', 'absolute', 'absolute')
-    .setAbsoluteSize(250, 250)
-    // Center the 'node' to the parent (the screen, in this instance)
-    .setAlign(0.5, 0.5)
-    // Set the translational origin to the center of the 'node'
-    .setMountPoint(0.5, 0.5)
-    // Set the rotational origin to the center of the 'node'
-    .setOrigin(0.5, 0.5);
+function addSquare() {
+    square = root.addChild();
+    square.setSizeMode(1,1,1);
+    square.setAbsoluteSize(300, 300);
+    square.setPosition(400, 0);
+    el = new DOMElement(square);
+    el.setProperty('border', '5px solid green');
+    el.setContent('square');
+}
 
-// Add a spinner component to the logo 'node' that is called, every frame
-var spinner = logo.addComponent({
-    onUpdate: function(time) {
-        logo.setRotation(0, time / 1000, 0);
-        logo.requestUpdateOnNextTick(spinner);
-    }
-});
+addCircle();
+addSquare();
 
-// Let the magic begin...
-logo.requestUpdate(spinner);
+setTimeout(function (){
+    root.removeChild(square);
+    root.removeChild(circle)
+
+    setTimeout(function() {
+
+        // Seems like the node that was was allocated to circle
+        // gets reallocated to square but the border-radius property
+        // doesn't get properly wiped away.
+        addSquare();
+
+        setTimeout(function() {
+            addCircle();
+        }, 750)
+    }, 750)
+}, 750);
