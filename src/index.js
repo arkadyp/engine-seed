@@ -8,31 +8,50 @@ var FamousEngine = require('famous/core/FamousEngine');
 FamousEngine.init();
 
 // Initialize with a scene; then, add a 'node' to the scene root
-var logo = FamousEngine.createScene().addChild();
+var scene = FamousEngine.createScene().addChild();
 
-// Create an [image] DOM element providing the logo 'node' with the 'src' path
-new DOMElement(logo, { tagName: 'img' })
-    .setAttribute('src', './images/famous_logo.png');
+var outerNode = scene.addChild();
+outerNode.setSizeMode('absolute', 'absolute', 'absolute');
+outerNode.setAbsoluteSize(300, 300);
+outerNode.setPosition(100, 100);
+var outerNodeDOM = new DOMElement(outerNode);
+outerNodeDOM.setProperty('border', '1px solid black');
 
-// Chainable API
-logo
-    // Set size mode to 'absolute' to use absolute pixel values: (width 250px, height 250px)
-    .setSizeMode('absolute', 'absolute', 'absolute')
-    .setAbsoluteSize(250, 250)
-    // Center the 'node' to the parent (the screen, in this instance)
-    .setAlign(0.5, 0.5)
-    // Set the translational origin to the center of the 'node'
-    .setMountPoint(0.5, 0.5)
-    // Set the rotational origin to the center of the 'node'
-    .setOrigin(0.5, 0.5);
+var modifierNodeSync;
+var innerNodeSync;
+var innerNodeSyncDOM;
+function addModifierPlusNodeSync() {
+    modifierNodeSync = outerNode.addChild();
+    innerNodeSync = modifierNodeSync.addChild();
+    innerNodeSync.setSizeMode('absolute', 'absolute', 'absolute');
+    innerNodeSync.setAbsoluteSize(100, 100);
+    innerNodeSyncDOM = new DOMElement(innerNodeSync);
+    innerNodeSyncDOM.setProperty('background-color', 'red');
+    innerNodeSyncDOM.setContent('I should be inside the box [sync]');
+}
 
-// Add a spinner component to the logo 'node' that is called, every frame
-var spinner = logo.addComponent({
-    onUpdate: function(time) {
-        logo.setRotation(0, time / 1000, 0);
-        logo.requestUpdateOnNextTick(spinner);
-    }
-});
+addModifierPlusNodeSync();
+outerNode.removeChild(modifierNodeSync);
+addModifierPlusNodeSync();
 
-// Let the magic begin...
-logo.requestUpdate(spinner);
+var modifierNodeAsync;
+var innerNodeAsync;
+var innerNodeAsyncDOM;
+function addModifierPlusNodeAsync() {
+    modifierNodeAsync = outerNode.addChild();
+    innerNodeAsync = modifierNodeAsync.addChild();
+    innerNodeAsync.setSizeMode('absolute', 'absolute', 'absolute');
+    innerNodeAsync.setAbsoluteSize(100, 100);
+    innerNodeAsync.setPosition(200, 0);
+    innerNodeAsyncDOM = new DOMElement(innerNodeAsync);
+    innerNodeAsyncDOM.setProperty('background-color', 'green');
+    innerNodeAsyncDOM.setContent('I should be inside the box [async]');
+}
+
+addModifierPlusNodeAsync();
+setTimeout(function(){
+    outerNode.removeChild(modifierNodeAsync);
+    addModifierPlusNodeAsync();
+}, 1);
+
+
